@@ -1,6 +1,6 @@
 import { useState, ReactNode } from 'react';
 import { ShieldCheck, ShieldAlert, ChevronRight, HelpCircle, Target, CheckCircle2, XCircle, RotateCcw } from 'lucide-react';
-import { processQuizAnswerLocal } from '../lib/analyzer';
+import { processQuizAnswerLocal } from '@cybersensei/core';
 
 const QUIZ_EXAMPLES = [
   {

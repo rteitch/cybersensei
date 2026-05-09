@@ -3,7 +3,7 @@ import { Search, Link as LinkIcon, FileText, RotateCcw, ChevronRight, Shield, Bo
 import { AnalysisPanel } from './components/AnalysisPanel';
 import { HistorySidebar } from './components/HistorySidebar';
 import { MiniQuiz } from './components/MiniQuiz';
-import { analyzeTextLocal } from './lib/analyzer';
+import { analyzeTextLocal } from '@cybersensei/core';
 import { AnalysisResult, HistoryItem } from './types';
 
 const TEXT_EXAMPLES = [

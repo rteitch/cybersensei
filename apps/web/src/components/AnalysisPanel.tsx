@@ -24,7 +24,7 @@ function getHighlightedText(text: string, highlights: string[], verdict: string)
   });
 }
 
-import { SCAM_DB, REGEX_RULES } from '../lib/analyzer';
+import { SCAM_DB, REGEX_RULES } from '@cybersensei/core';
 
 // ─── Empty State (before any analysis) ───────────────────────────────────────
 function EmptyState() {

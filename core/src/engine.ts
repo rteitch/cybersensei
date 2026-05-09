@@ -3,10 +3,9 @@
 // ============================================================
 
 import Fuse from 'fuse.js';
-import { AnalysisResult } from '../types';
-import { ScamDatabaseItem, getWeightCategory } from './types';
-import { cleanText } from './preprocessing';
-import { extractUrls, analyzeURL } from './url-analyzer';
+import { ScamDatabaseItem, getWeightCategory, AnalysisResult } from './types.js';
+import { cleanText } from './preprocessing.js';
+import { extractUrls, analyzeURL } from './url-analyzer.js';
 import {
   REGEX_RULES,
   WEIGHT_MULTIPLIERS,
@@ -15,8 +14,8 @@ import {
   DANGEROUS_COMBOS,
   NEGATION_PATTERN,
   NEGATION_WINDOW
-} from './regex-rules';
-import { SCAM_DB } from './scam-db';
+} from './regex-rules.js';
+import { SCAM_DB } from './scam-db.js';
 
 // ============================================================
 // Fuse.js cache
