@@ -308,7 +308,7 @@ export function AnalysisPanel({ result, analyzedText = "" }: { result: AnalysisR
 
         {/* ── Share Buttons ──────────────────────────────────────────────────── */}
         {!isCapturing && (
-          <div className="px-6 pb-6 pt-0 border-t border-gray-100 flex gap-3 mt-2">
+          <div className="px-6 pb-6 pt-0 border-t border-gray-100 flex flex-col sm:flex-row gap-3 mt-2">
             <button
               onClick={handleShare}
               className="flex-1 flex items-center justify-center gap-2 bg-white border border-gray-200 hover:bg-gray-50 text-[var(--color-navy)] py-3 px-4 rounded-xl font-bold transition-colors text-sm"

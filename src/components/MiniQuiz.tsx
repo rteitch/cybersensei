@@ -146,7 +146,7 @@ export function MiniQuiz() {
           </div>
 
           {!feedback ? (
-            <div className="flex gap-4">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                <button 
                  onClick={() => handleGuess(true)}
                  disabled={isLoading}

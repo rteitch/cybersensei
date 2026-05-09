@@ -275,7 +275,7 @@ export default function App() {
       </main>
 
       {/* Footer */}
-      <footer className="py-6 mt-8 text-center border-t border-gray-200/60 bg-white/60 backdrop-blur-sm">
+      <footer className="py-6 mt-8 px-4 sm:px-6 text-center border-t border-gray-200/60 bg-white/60 backdrop-blur-sm">
         <p className="text-sm text-gray-400 font-medium">
           © {new Date().getFullYear()} CyberSensei &mdash; Dari ide ke kenyataan oleh <span className="font-semibold text-[var(--color-navy)]">Rizal TH</span>
           &nbsp;&middot;&nbsp; VibesCoding &times; Gemini
