@@ -80,7 +80,6 @@ export const UNICODE_HOMOGLYPH_MAP: Record<string, string> = {
   '５': '5', '６': '6', '７': '7', '８': '8', '９': '9',
 };
 
-// GAP 22 FIX: Single source of truth untuk homoglyphs
 // Gunakan SEMUA entries — NFKD normalization tidak mengkonversi Greek/Latin Extended/Fullwidth ke ASCII
 const HOMOGLYPH_MAP: Record<string, string> = { ...UNICODE_HOMOGLYPH_MAP };
 
@@ -90,13 +89,14 @@ export function cleanText(raw: string): string {
 
   // Normalize Unicode (NFKD) to decompose combined characters
   text = text.normalize('NFKD');
+  
+  // GAP FIX: Zalgo Text / Combining Diacritical Marks stripping
+  text = text.replace(/[\u0300-\u036f]/g, '');
 
   // Remove emojis and zero-width characters
-  // GAP 25 FIX: Gabungkan penghapusan zero-width characters dan format characters
-  // GAP 36 FIX: Ganti emoji dengan spasi agar tidak menggabungkan kata secara tidak sengaja
   text = text.replace(EMOJI_REGEX, ' ');
-  // Hapus karakter zero-width (U+200B, U+200C, U+200D, U+FEFF, U+00AD, dll) yang sering dipakai penipu
-  text = text.replace(/[\u200B-\u200D\uFEFF\u00AD​-‍﻿­]/g, '');
+  // Hapus karakter zero-width dan Bidi Overrides (U+202A-U+202E, U+2066-U+2069) yang sering dipakai penipu
+  text = text.replace(/[\u200B-\u200D\uFEFF\u00AD\u202A-\u202E\u2066-\u2069​-‍﻿­]/g, '');
 
   // Replace homoglyphs (Cyrillic lookalikes → Latin)
   for (const [glyph, replacement] of Object.entries(HOMOGLYPH_MAP)) {
@@ -119,6 +119,8 @@ export function cleanText(raw: string): string {
   text = text.replace(/(?<=[a-zA-Z])4(?=[a-zA-Z])/g, 'a'); // h4diah  → hadiah
   text = text.replace(/(?<=[a-zA-Z])5(?=[a-zA-Z])/g, 's'); // 5hopee  → shopee
   text = text.replace(/(?<=[a-zA-Z])7(?=[a-zA-Z])/g, 't'); // 7ransfer → transfer
+  text = text.replace(/(?<=[a-zA-Z])8(?=[a-zA-Z])/g, 'b'); // 8ank    → bank
+  text = text.replace(/(?<=[a-zA-Z])6(?=[a-zA-Z])/g, 'g'); // 6rab    → grab
   // Simbol leet di antara/setelah huruf
   text = text.replace(/(?<=[a-zA-Z])!(?=[a-zA-Z])/g, 'i'); // und!an  → undian
   text = text.replace(/(?<=[a-zA-Z])\$(?=[a-zA-Z])/g, 's'); // $hopee  → shopee
@@ -130,6 +132,8 @@ export function cleanText(raw: string): string {
   text = text.replace(/(?<=\s|^)1(?=[a-zA-Z]{2,})/g, 'l'); // 1ink     → link
   text = text.replace(/(?<=\s|^)3(?=[a-zA-Z]{2,})/g, 'e'); // 3mail    → email
   text = text.replace(/(?<=\s|^)5(?=[a-zA-Z]{2,})/g, 's'); // 5hop     → shop
+  text = text.replace(/(?<=\s|^)8(?=[a-zA-Z]{2,})/g, 'b'); // 8ayar    → bayar
+  text = text.replace(/(?<=\s|^)6(?=[a-zA-Z]{2,})/g, 'g'); // 6rab     → grab
   text = text.replace(/(?<=\s|^)\$(?=[a-zA-Z]{2,})/g, 's'); // $elamat → selamat (prefix case)
 
   // GAP 38 FIX: Normalisasi spasi sebelum tanda baca agar regex pencocokan jarak tidak gagal

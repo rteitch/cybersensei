@@ -42,7 +42,7 @@ function getFuse(threshold: number): Fuse<ScamDatabaseItem> {
 // ============================================================
 // Regex-based detection
 // ============================================================
-const checkWithRegex = (text: string, isUrlInput: boolean = false) => {
+const checkWithRegex = (text: string, isUrlInput: boolean = false, urlMatchedBrands: Set<string> = new Set()) => {
   const flags: string[] = [];
   const suspiciousKeywordsList: string[] = [];
   const matchedRuleIds: string[] = [];
@@ -51,17 +51,36 @@ const checkWithRegex = (text: string, isUrlInput: boolean = false) => {
   const categoryCounts: Record<string, number> = {};
 
   for (const rule of REGEX_RULES) {
+    // FIX 5: Skip typosquatting regex if URL analyzer already detected the same brand
+    if (rule.id === 'typosquatting' && urlMatchedBrands.size > 0) {
+      rule.regex.lastIndex = 0;
+      const testMatch = rule.regex.exec(text);
+      if (testMatch) {
+        const matchedText = testMatch[0].toLowerCase();
+        const alreadyCaught = [...urlMatchedBrands].some(brand => matchedText.includes(brand));
+        if (alreadyCaught) continue;
+      }
+    }
+
     const urlWeightFactor = (isUrlInput && URL_IRRELEVANT_RULES.has(rule.id)) ? 0.3 : 1.0;
     rule.regex.lastIndex = 0;
     const matches = text.match(rule.regex);
     if (matches) {
-      const firstMatch = rule.regexForPosition!.exec(text);
+      const firstMatch = rule.regexForPosition?.exec(text);
       let isNegated = false;
       if (firstMatch) {
         const matchEnd = firstMatch.index + firstMatch[0].length;
         const beforeWindow = text.substring(Math.max(0, firstMatch.index - NEGATION_WINDOW), firstMatch.index);
         const afterWindow  = text.substring(matchEnd, matchEnd + NEGATION_WINDOW);
         isNegated = NEGATION_PATTERN.test(beforeWindow) || NEGATION_PATTERN.test(afterWindow);
+        
+        // GAP FIX: Reverse Psychology Negation
+        if (isNegated) {
+           const NEGATION_REVERSAL_WORDS = /(sampai ketinggalan|lewatkan|abaikan|tunda lagi|bukan penipuan)/i;
+           if (NEGATION_REVERSAL_WORDS.test(beforeWindow) || NEGATION_REVERSAL_WORDS.test(afterWindow)) {
+              isNegated = false;
+           }
+        }
       }
 
       flags.push(rule.label);
@@ -86,7 +105,8 @@ const checkWithRegex = (text: string, isUrlInput: boolean = false) => {
 };
 
 // ============================================================
-// Jaccard Similarity — Fallback saat Fuse.js gagal
+// Jaccard Similarity — Mengukur kemiripan dua himpunan token
+// J(A, B) = |A ∩ B| / |A ∪ B|, range 0–1
 // ============================================================
 function jaccardSimilarity(a: string, b: string): number {
   const tokenize = (s: string) =>
@@ -106,13 +126,14 @@ const PRECOMPUTED_CORPORA = SCAM_DB.map(item => {
   return { item, tokens };
 });
 
-// Simple hash for cache key (djb2 algorithm)
-function simpleHash(str: string): string {
+// DJB2 hash for cache key — fast, low collision, by Daniel J. Bernstein
+function djb2Hash(str: string): string {
   let hash = 5381;
   for (let i = 0; i < str.length; i++) {
     hash = ((hash << 5) + hash) + str.charCodeAt(i);
   }
-  return hash.toString(36);
+  // Combine with length as safety net against theoretical collision
+  return `${hash.toString(36)}_${str.length}`;
 }
 
 // Module-level cache untuk mencegah perhitungan ulang pada input yang sama
@@ -136,7 +157,7 @@ export function analyzeTextLocal(input: string, isUrlInput: boolean = false): An
   }
 
   // Cek cache
-  const cacheKey = `${isUrlInput}:${simpleHash(input)}`;
+  const cacheKey = `${isUrlInput}:${input.substring(0, 10)}_${djb2Hash(input)}`;
   if (analysisCache.has(cacheKey)) {
     return analysisCache.get(cacheKey)!;
   }
@@ -151,7 +172,11 @@ export function analyzeTextLocal(input: string, isUrlInput: boolean = false): An
   const cleaned = cleanText(safeInput);
 
   // 2. URL analysis (extract and analyze any URLs in the text)
-  const urls = extractUrls(safeInput);
+  // FIX: Extract from BOTH raw and cleaned text — homoglyph URLs (e.g. bіt.ly with Cyrillic і)
+  // won't be found in raw but will normalize to valid URLs after cleanText
+  const rawUrls = extractUrls(safeInput);
+  const cleanedUrls = extractUrls(cleaned);
+  const urls = [...new Set([...rawUrls, ...cleanedUrls])];
   const urlResults = urls.map(u => analyzeURL(u));
   const urlScore = urlResults.reduce((sum, r) => sum + r.score, 0);
   const urlFlags: string[] = [];
@@ -177,7 +202,11 @@ export function analyzeTextLocal(input: string, isUrlInput: boolean = false): An
   }
 
   // 3. Regex-based detection on cleaned text
-  const { flags: regexFlags, suspiciousKeywordsList, matchedRuleIds, negatedRuleIds, score: regexScore } = checkWithRegex(cleaned, isUrlInput);
+  // Collect brands already detected by URL analyzer to avoid double-counting typosquatting
+  const urlMatchedBrands = new Set(
+    urlResults.filter(ur => ur.matchedBrand).map(ur => ur.matchedBrand!)
+  );
+  const { flags: regexFlags, suspiciousKeywordsList, matchedRuleIds, negatedRuleIds, score: regexScore } = checkWithRegex(cleaned, isUrlInput, urlMatchedBrands);
 
   // 4. Fuzzy Search
   const dynamicThreshold = cleaned.length < 30 ? 0.15 : 0.3;
@@ -328,8 +357,8 @@ export function analyzeTextLocal(input: string, isUrlInput: boolean = false): An
     action = "Cross-check ulang pihak pengirim aslinya. Buka tabungan mandiri/shopee dll dari aplikasinya langsung, BUKAN dari tautannya.";
   }
 
-  // Normalisasi finalScore proporsional DAN dikunci ke decision
-  let displayScore = Math.round(Math.min((finalScore / 20) * 10, 10));
+  // Normalisasi finalScore dikunci ke decision
+  let displayScore: number;
   if (decision === "BERBAHAYA") {
     displayScore = Math.min(Math.max(Math.round(5 + (finalScore / 20) * 5), 7), 10);
   } else if (decision === "MENCURIGAKAN") {

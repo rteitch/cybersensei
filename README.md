@@ -139,6 +139,8 @@ Input (Teks/URL)
 | Money Mule | Critical | Ajakan sewa/jual rekening |
 | Voice Cloning | Critical | AI meniru suara keluarga |
 | Deepfake Video Call | Critical | Face-swap real-time saat video call |
+| Remote Access Scam | Critical | "Tolong instal AnyDesk untuk dibantu CS" |
+| Code-Switching Phishing | High | "Your account telah diblokir, verify sekarang" |
 | ...dan masih banyak lagi | | |
 
 </details>

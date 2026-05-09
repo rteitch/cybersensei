@@ -238,16 +238,17 @@ export default function App() {
 
                 <div className="mt-8 pt-6 border-t border-gray-100">
                   <p className="text-xs text-gray-500 font-bold mb-3 uppercase tracking-wider">Coba contoh kasus nyata:</p>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-2 sm:gap-2.5">
                     {(inputType === 'text' ? TEXT_EXAMPLES : URL_EXAMPLES).map((example, i) => {
                       const Icon = example.icon;
                       return (
                         <button
                           key={i}
                           onClick={() => handleExampleSelect(example)}
-                          className="flex items-center gap-1.5 text-sm bg-blue-50 text-blue-700 hover:bg-blue-100 py-2 px-3 rounded-lg transition-colors border border-blue-100 font-medium"
+                          className="flex items-center gap-1.5 text-[13px] sm:text-sm bg-white text-slate-600 hover:text-blue-700 hover:bg-blue-50 py-1.5 px-3.5 rounded-full transition-all border border-slate-200 hover:border-blue-200 font-medium shadow-[0_1px_2px_rgba(0,0,0,0.02)] hover:shadow-sm active:scale-[0.98] group"
                         >
-                          <Icon className="w-4 h-4 text-blue-500" /> {example.label} <ChevronRight className="w-4 h-4 opacity-50 ml-1" />
+                          <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-400 group-hover:text-blue-500 transition-colors" />
+                          <span>{example.label}</span>
                         </button>
                       );
                     })}
@@ -258,7 +259,7 @@ export default function App() {
             </div>
 
             {/* Right Column: Output Panel & History */}
-            <div className="lg:col-span-5 flex flex-col gap-6" ref={resultsRef}>
+            <div className="lg:col-span-5 flex flex-col gap-6 scroll-mt-24 sm:scroll-mt-28" ref={resultsRef}>
               <AnalysisPanel result={currentResult} analyzedText={analyzedText} />
               {history.length > 0 && (
                 <HistorySidebar history={history} onSelect={handleSelectHistory} />

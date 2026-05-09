@@ -5,7 +5,6 @@
 import { URLAnalysis, HomographResult } from './types';
 import { UNICODE_HOMOGLYPH_MAP } from './preprocessing';
 
-// GAP 35 FIX: Pisahkan TLD berdasarkan tingkat risiko untuk hindari false positive (e.g. .dev, .es)
 export const HIGH_RISK_TLDS = new Set([
   'xyz', 'top', 'buzz', 'club', 'click', 'icu',
   'tk', 'ml', 'ga', 'cf', 'gq',
@@ -151,6 +150,7 @@ export const FREE_SUBDOMAINS = [
   'web.app', 'firebaseapp.com',
   'readthedocs.io',
   'weebly.com', 'wixsite.com',
+  'canva.site', 'notion.site', 'wordpress.com', 'blogspot.com'
 ];
 
 export const BRAND_DOMAINS: Record<string, string[]> = {
@@ -348,6 +348,27 @@ export const WHITELIST_DOMAINS = new Set([
   'wikipedia.org', 'wikimedia.org',
 ]);
 
+// Known valid TLDs to filter bare domain matches and reduce false positives
+const KNOWN_TLDS = new Set([
+  // Generic
+  'com', 'co', 'org', 'net', 'edu', 'gov', 'mil', 'int',
+  // Indonesia
+  'id', 'co.id', 'ac.id', 'go.id', 'or.id', 'my.id', 'biz.id', 'web.id', 'sch.id', 'ponpes.id',
+  // Common ccTLDs
+  'uk', 'us', 'de', 'fr', 'jp', 'cn', 'kr', 'au', 'ca', 'br', 'in', 'ru', 'es', 'it', 'nl',
+  'se', 'no', 'fi', 'dk', 'pl', 'cz', 'at', 'ch', 'be', 'pt', 'ie', 'nz', 'sg', 'my', 'ph',
+  'th', 'vn', 'tw', 'hk', 'mo', 'cc', 'su', 'pw', 'ws', 'li', 'me', 'tv', 'io', 'ai', 'app',
+  // Common gTLDs
+  'info', 'biz', 'pro', 'name', 'mobi', 'travel', 'asia', 'tel',
+  'dev', 'app', 'page', 'zip', 'mov', 'xyz', 'top', 'online', 'site', 'website', 'space',
+  'live', 'shop', 'store', 'tech', 'digital', 'cloud', 'blog', 'club', 'work', 'click',
+  'link', 'fun', 'icu', 'buzz', 'best', 'lol', 'monster', 'cyou', 'hair', 'beauty', 'boats',
+  'quest', 'cfd', 'gdn', 'men', 'cam', 'adult', 'party', 'bet', 'casino', 'loan', 'racing',
+  'win', 'bid', 'trade', 'accountant', 'support',
+  // Platform shorteners TLDs
+  'ly', 'gl', 'at', 'ee', 'do', 'to', 'im', 'ws', 'sh',
+]);
+
 export function extractUrls(text: string): string[] {
   let normalized = text
     .replace(/hxxps?:\/\//gi, 'https://')
@@ -360,7 +381,14 @@ export function extractUrls(text: string): string[] {
   const urlRegex = /https?:\/\/[^\s<>"'`,;)}\]]+/gi;
   const matches = normalized.match(urlRegex) || [];
   const bareDomainRegex = /(?:www\.)?[a-zA-Z0-9][-a-zA-Z0-9]*\.[a-zA-Z]{2,}(?:\.[a-zA-Z]{2,})?[^\s]*/gi;
-  const bareMatches = normalized.match(bareDomainRegex) || [];
+  const bareMatches = (normalized.match(bareDomainRegex) || []).filter(m => {
+    // Filter against known TLDs to reduce false positives (e.g. "aku.sedang", "ini.contoh")
+    const parts = m.toLowerCase().replace(/^www\./, '').split(/[/?#\s]/)[0].split('.');
+    if (parts.length < 2) return false;
+    const tld = parts[parts.length - 1];
+    const compoundTld = parts.length >= 3 ? `${parts[parts.length - 2]}.${tld}` : null;
+    return KNOWN_TLDS.has(tld) || (compoundTld !== null && KNOWN_TLDS.has(compoundTld));
+  });
   return [...new Set([...matches, ...bareMatches])];
 }
 
@@ -435,6 +463,11 @@ const REDIRECT_PARAMS = ['url', 'redirect', 'next', 'q', 'u', 'link', 'goto', 'd
 const KNOWN_REDIRECTORS = new Set(['google.com', 'facebook.com', 'youtube.com', 'instagram.com', 't.co']);
 
 export function analyzeURL(url: string): URLAnalysis {
+  const originalUrl = url;
+  try {
+    url = new URL(url.startsWith('http') ? url : `https://${url}`).href;
+  } catch { /* biarkan url asli jika invalid */ }
+
   const domain = extractDomain(url);
   const rawDomain = extractRawDomain(url);
   const reasons: string[] = [];
@@ -466,8 +499,8 @@ export function analyzeURL(url: string): URLAnalysis {
   }
 
   // Check IP address as domain
-  if (/^\d{1,3}(\.\d{1,3}){3}/.test(domain)) {
-    reasons.push('Menggunakan IP address langsung — situs resmi tidak melakukan ini');
+  if (/^\d{1,3}(\.\d{1,3}){3}/.test(domain) || /^\d{8,10}$/.test(domain) || /^0x[0-9a-f]{8}$/i.test(domain)) {
+    reasons.push('Menggunakan IP address (Desimal/Hex/Dotted) langsung — situs resmi tidak melakukan ini');
     score += 5;
   }
 
@@ -505,7 +538,7 @@ export function analyzeURL(url: string): URLAnalysis {
       for (const [brand, brandDomains] of Object.entries(BRAND_DOMAINS)) {
         const brandInPathPattern = new RegExp(`(^|[-_./])${brand}([-_./]|$)`, 'i');
         if (brandInPathPattern.test(lowerSegment) &&
-            !brandDomains.some(d => domain === d || domain.endsWith('.' + d))) {
+          !brandDomains.some(d => domain === d || domain.endsWith('.' + d))) {
           if (!matchedBrand) {
             matchedBrand = brand;
             legitimateDomains = brandDomains;
@@ -515,7 +548,7 @@ export function analyzeURL(url: string): URLAnalysis {
         }
       }
     }
-  } catch {}
+  } catch { }
 
   // Check for suspicious patterns in domain
   if (/secure-|login-|verify-|update-|account-|signin-/.test(domain)) {
@@ -543,7 +576,7 @@ export function analyzeURL(url: string): URLAnalysis {
   }
 
   // Check for data: URI or javascript: URI
-  if (/^(data|javascript|vbscript):/i.test(url)) {
+  if (/^(data|javascript|vbscript):/i.test(originalUrl)) {
     reasons.push('Menggunakan skema URI berbahaya (data/javascript)');
     score += 8;
   }
@@ -556,24 +589,24 @@ export function analyzeURL(url: string): URLAnalysis {
         reasons.push('URL menggunakan format autentikasi (user@host) untuk menyamarkan domain asli — teknik phishing berbahaya');
         score += 8;
       }
-    } catch {}
+    } catch { }
   }
 
   // Open Redirect Detection
   try {
     const parsedForRedirect = new URL(url.startsWith('http') ? url : `http://${url}`);
     if (KNOWN_REDIRECTORS.has(parsedForRedirect.hostname) ||
-        [...KNOWN_REDIRECTORS].some(d => parsedForRedirect.hostname.endsWith('.' + d))) {
+      [...KNOWN_REDIRECTORS].some(d => parsedForRedirect.hostname.endsWith('.' + d))) {
       for (const param of REDIRECT_PARAMS) {
         const redirectTarget = parsedForRedirect.searchParams.get(param);
-        if (redirectTarget && /^https?:\/\//i.test(redirectTarget)) {
+        if (redirectTarget && (/^https?:\/\//i.test(redirectTarget) || redirectTarget.startsWith('aHR0c') || redirectTarget.startsWith('aHR0cHM6'))) {
           reasons.push(`⚠️ Open Redirect: Domain resmi dipakai sebagai pengalih ke "${redirectTarget.substring(0, 50)}..."`);
           score += 5;
           break;
         }
       }
     }
-  } catch {}
+  } catch { }
 
   // IDN HOMOGRAPH ATTACK DETECTION
   const homographResult = detectHomographAttack(rawDomain);
@@ -600,12 +633,12 @@ export function analyzeURL(url: string): URLAnalysis {
   }
 
   // Whitelist check
-  const isWhitelisted = WHITELIST_DOMAINS.has(domain) ||
+  let isWhitelisted = WHITELIST_DOMAINS.has(domain) ||
     [...WHITELIST_DOMAINS].some(wl => {
       if (domain === wl) return true;
       if (domain.endsWith('.' + wl)) {
         const subdomain = domain.replace('.' + wl, '');
-        const suspiciousSubPatterns = /^(login|secure|verify|update|account|auth|confirm|check|support|cs|help|service)/i;
+        const suspiciousSubPatterns = /^(login|secure|verify|update|account|auth|confirm|check|support|cs|help|service|mobile|app|my|info|web|online|portal|care|member|vip|official|id)/i;
         if (suspiciousSubPatterns.test(subdomain) && domain.split('.').length > 3) {
           reasons.push(`Subdomain mencurigakan pada domain resmi: ${subdomain}.${wl}`);
           score += 3;
@@ -615,6 +648,13 @@ export function analyzeURL(url: string): URLAnalysis {
       }
       return false;
     });
+
+  // GAP FIX: SaaS Exception for Google Sites and Storage
+  if (url.includes('sites.google.com') || url.includes('storage.googleapis.com')) {
+    isWhitelisted = false;
+    score += 4;
+    reasons.push("Menggunakan layanan hosting Google (Sites/Storage) yang sering disalahgunakan untuk phishing.");
+  }
 
   // Generate whitelist reason
   let whitelistReason: string | null = null;
@@ -634,7 +674,7 @@ export function analyzeURL(url: string): URLAnalysis {
   }
 
   return {
-    url,
+    url: originalUrl,
     domain,
     isSuspicious: score >= 3 && !isWhitelisted,
     reasons,
