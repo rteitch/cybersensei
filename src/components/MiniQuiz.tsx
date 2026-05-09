@@ -63,7 +63,7 @@ export function MiniQuiz() {
     }
 
     try {
-      const response = await processQuizAnswerLocal(currentExample.content, isSafeGuess, currentExample.id);
+      const response = processQuizAnswerLocal(currentExample.content, isSafeGuess, currentExample.id);
       setFeedback(response);
     } catch (err) {
       setFeedback("Maaf, terjadi kesalahan saat mengecek jawaban.");

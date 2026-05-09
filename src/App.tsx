@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from 'react';
-import { Search, Link as LinkIcon, FileText, RotateCcw, ChevronRight, Menu, X, Shield, BookOpen, Package, Trophy, Landmark, Smartphone, BadgeDollarSign, Users, ShieldAlert, CreditCard, Heart, Briefcase, QrCode, Banknote } from 'lucide-react';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { Search, Link as LinkIcon, FileText, RotateCcw, ChevronRight, Shield, BookOpen, Package, Trophy, Landmark, Smartphone, BadgeDollarSign, Users, ShieldAlert, CreditCard, Heart, Briefcase, QrCode, Banknote, Check } from 'lucide-react';
 import { AnalysisPanel } from './components/AnalysisPanel';
 import { HistorySidebar } from './components/HistorySidebar';
 import { MiniQuiz } from './components/MiniQuiz';
@@ -31,7 +31,7 @@ export default function App() {
   const [input, setInput] = useState('');
   const [analyzedText, setAnalyzedText] = useState('');
   const [inputType, setInputType] = useState<'text' | 'url'>('text');
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [justAnalyzed, setJustAnalyzed] = useState(false);
   const [currentResult, setCurrentResult] = useState<AnalysisResult | null>(null);
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -55,37 +55,34 @@ export default function App() {
     localStorage.setItem('cybersensei_history', JSON.stringify(newHistory));
   };
 
-  const handleAnalyze = async () => {
+  const handleAnalyze = useCallback(() => {
     if (!input.trim()) return;
-    
-    setIsAnalyzing(true);
+
     setError(null);
     setCurrentResult(null);
 
-    try {
-      const result = await analyzeTextLocal(input, inputType === 'url');
-      setCurrentResult(result);
-      setAnalyzedText(input);
-      
-      const historyItem: HistoryItem = {
-        id: Date.now().toString(),
-        timestamp: Date.now(),
-        input,
-        inputType,
-        result
-      };
-      saveToHistory(historyItem);
-      
-      // Auto-scroll to results on mobile
-      setTimeout(() => {
-        resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 100);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "CyberSensei sedang istirahat sebentar, coba lagi ya!");
-    } finally {
-      setIsAnalyzing(false);
-    }
-  };
+    const result = analyzeTextLocal(input, inputType === 'url');
+    setCurrentResult(result);
+    setAnalyzedText(input);
+    setJustAnalyzed(true);
+
+    const historyItem: HistoryItem = {
+      id: Date.now().toString(),
+      timestamp: Date.now(),
+      input,
+      inputType,
+      result
+    };
+    saveToHistory(historyItem);
+
+    // Auto-scroll to results on mobile
+    setTimeout(() => {
+      resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+
+    // Reset feedback indicator after brief delay
+    setTimeout(() => setJustAnalyzed(false), 1200);
+  }, [input, inputType, history]);
 
   const handleSelectHistory = (item: HistoryItem) => {
     setInput(item.input);
@@ -219,13 +216,17 @@ export default function App() {
 
                 <button
                   onClick={handleAnalyze}
-                  disabled={isAnalyzing || !input.trim()}
-                  className="w-full mt-6 flex items-center justify-center gap-2 bg-[var(--color-navy)] hover:bg-[#152B47] text-white py-4 px-6 rounded-xl font-bold text-base transition-colors disabled:opacity-70 disabled:cursor-not-allowed shadow-md"
+                  disabled={!input.trim()}
+                  className={`w-full mt-6 flex items-center justify-center gap-2 py-4 px-6 rounded-xl font-bold text-base transition-all shadow-md disabled:opacity-70 disabled:cursor-not-allowed ${
+                    justAnalyzed
+                      ? 'bg-emerald-500 text-white scale-[0.98]'
+                      : 'bg-[var(--color-navy)] hover:bg-[#152B47] text-white active:scale-[0.97]'
+                  }`}
                 >
-                  {isAnalyzing ? (
+                  {justAnalyzed ? (
                     <>
-                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      <span>Menganalisis...</span>
+                      <Check className="w-5 h-5" />
+                      <span>Telah Diperiksa</span>
                     </>
                   ) : (
                     <>

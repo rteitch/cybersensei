@@ -131,6 +131,7 @@ const UNICODE_HOMOGLYPH_MAP: Record<string, string> = {
 };
 
 export function cleanText(raw: string): string {
+  if (!raw) return '';
   let text = raw;
 
   // Normalize Unicode (NFKD) to decompose combined characters
@@ -231,6 +232,10 @@ const WHITELIST_DOMAINS = new Set([
   // Validasi domain .go.id/.co.id dilakukan secara struktural di analyzeURL()
   'kitabisa.com', 'rumahzakat.org', 'baznas.go.id',
   'kemenkes.go.id', 'kemendikbud.go.id', 'polri.go.id',
+  'dana.id', 'ovo.id', 'gopay.co.id',
+  'tiket.com', 'pegipegi.com',
+  'bpjsketenagakerjaan.go.id', 'disnaker.go.id',
+  'indodax.com', 'tokocrypto.com',
 ]);
 
 function extractUrls(text: string): string[] {
@@ -784,8 +789,8 @@ export const REGEX_RULES: RegexRule[] = [
   },
   {
     id: 'military_romance',
-    label: 'Identitas tentara/dokter/insinyu asing — modus Romance Scam dengan profesi terpercaya.',
-    regex: /(aku (tentara|dokter|insinyu).{0,15}(di|sedang).{0,15}(bertugas|yaman|suriah|afghanistan|rig)|butuh uang.{0,15}(cuti|dokumen|tiket)|aku.{0,10}(single|duda|janda).{0,10}(parent|anak))/gi,
+    label: 'Identitas tentara/dokter/insinyur asing — modus Romance Scam dengan profesi terpercaya.',
+    regex: /(aku (tentara|dokter|insinyur).{0,15}(di|sedang).{0,15}(bertugas|yaman|suriah|afghanistan|rig)|butuh uang.{0,15}(cuti|dokumen|tiket)|aku.{0,10}(single|duda|janda).{0,10}(parent|anak))/gi,
     score: 6,
     weight_category: 'moderate'
   },
@@ -1450,6 +1455,86 @@ const NEW_SCAM_ENTRIES: ScamDatabaseItem[] = [
     analysis_result: "Ini adalah **Modus Penipuan Segitiga**. Pelaku menipu dua pihak sekaligus: Penjual asli dan Pembeli asli. Pelaku berpura-pura jadi pembeli ke penjual asli, dan berpura-pura jadi penjual ke pembeli asli. Pelaku menyuruh Pembeli asli untuk mengecek barang ke Penjual asli, namun melarang mereka membahas harga. Saat sepakat, Pembeli mentransfer uang ke rekening PENIPU, bukan ke Penjual asli. Akibatnya, Pembeli kehilangan uang, dan Penjual asli tidak mau memberikan barang karena merasa belum dibayar.",
     micro_lesson: "Saat bertransaksi COD barang bernilai tinggi: (1) Bahas harga langsung di tempat, jangan diam saja. (2) TRANSFER HANYA KE NAMA PEMILIK ASLI YANG MEMBAWA BARANG/STNK. Abaikan instruksi untuk mentransfer ke 'rekening istri/suami/saudara' dari orang di WhatsApp.",
     weight_category: "high"
+  },
+  {
+    id: "fraud_84",
+    category: "Penipuan eSIM / Transfer Nomor",
+    threat_level: "Critical",
+    action: "JANGAN pernah scan QR code eSIM dari orang yang tidak dikenal. Transfer nomor eSIM hanya dilakukan di gerai provider resmi.",
+    keywords: ["esim", "qr esim", "scan esim", "transfer nomor", "pindah esim", "aktivasi esim", "esim baru", "ganti esim", "qr code esim", "esim digital"],
+    patterns: [
+      "scan qr esim ini untuk aktivasi",
+      "transfer nomor ke esim baru",
+      "pindah esim ke hp baru lewat qr",
+      "esim anda perlu diaktivasi ulang",
+      "scan kode qr untuk esim",
+      "download esim dari link ini",
+      "esim tidak aktif scan untuk perbaiki",
+      "kirim qr esim untuk verifikasi"
+    ],
+    analysis_result: "Ini adalah modus **Penipuan eSIM / Transfer Nomor** yang berkembang pesat di 2025-2026. Pelaku meminta korban scan QR code eSIM yang sebenarnya adalah kode transfer nomor. Saat QR di-scan, nomor telepon korban secara resmi dipindahkan ke perangkat penipu (dikenal sebagai SIM swap generasi baru). Dengan menguasai nomor HP korban, pelaku bisa menerima semua OTP perbankan, reset password akun digital, dan menguras rekening. Modus ini lebih berbahaya dari SIM swap tradisional karena prosesnya lebih cepat dan sulit dilacak.",
+    micro_lesson: "eSIM bisa ditransfer hanya dengan scan QR code—itulah mengapa penipu sangat menginginkanmu scan QR mereka. JANGAN pernah scan QR eSIM dari sumber tidak resmi. Aktivasi eSIM HANYA melalui aplikasi provider (MyTelkomsel, myIM3, MyXL) atau gerai resmi.",
+    weight_category: "critical"
+  },
+  {
+    id: "fraud_85",
+    category: "Phishing via Threads / Platform Sosial Baru",
+    threat_level: "High",
+    action: "Waspadai DM atau mention di Threads/Bluesky/Telegram yang mengarahkan ke tautan login. Platform baru sering jadi target phishing karena moderasi belum ketat.",
+    keywords: ["threads", "bluesky", "mastodon", "dm", "direct message", "mention", "tag", "login", "verifikasi", "centang", "verified", "follow", "link bio"],
+    patterns: [
+      "cek link di bio threads ku",
+      "mention di threads untuk klaim",
+      "verifikasi akun threads di sini",
+      "login untuk dapat centang biru",
+      "follow back di threads ya",
+      "dm aku di threads untuk info",
+      "threads official minta verifikasi",
+      "klik link dari threads untuk konfirmasi"
+    ],
+    analysis_result: "Ini adalah modus **Phishing via Platform Sosial Baru** (Threads, Bluesky, Mastodon). Saat platform baru booming, penipu memanfaatkan fakta bahwa pengguna belum familiar dengan keamanan platform tersebut. Pelaku mengirim DM atau mention yang mengaku dari 'Tim Threads' atau 'Threads Official', meminta verifikasi akun atau login melalui tautan palsu. Karena platform baru biasanya memiliki celah keamanan dan moderasi yang belum matang, penipuan lebih mudah menyebar.",
+    micro_lesson: "Platform sosial baru (Threads, Bluesky) TIDAK PERNAH meminta login atau verifikasi melalui DM/mention. Semua verifikasi akun dilakukan melalui pengaturan aplikasi. Jika ada yang minta klik tautan untuk 'dapat centang biru' = 100% penipuan.",
+    weight_category: "high"
+  },
+  {
+    id: "fraud_86",
+    category: "Scam Telegram Premium / Telegram Stars",
+    threat_level: "High",
+    action: "Jangan beli Telegram Premium atau Stars dari penjual pihak ketiga di luar aplikasi resmi. Pembelian hanya melalui pengaturan Telegram.",
+    keywords: ["telegram premium", "telegram stars", "stars", "premium telegram", "beli stars", "beli premium", "gift premium", "donasi stars", "top up stars", "telegram paid"],
+    patterns: [
+      "jual telegram premium murah",
+      "beli stars telegram harga agen",
+      "telegram premium diskon 50 persen",
+      "gift premium telegram untukmu",
+      "top up stars telegram via wa",
+      "donasi stars telegram ke channel",
+      "beli premium telegram bayar transfer",
+      "stars telegram grosir murah"
+    ],
+    analysis_result: "Ini adalah modus **Scam Telegram Premium / Telegram Stars**. Telegram Stars adalah mata uang digital di Telegram untuk membayar layanan premium, channel berbayar, dan donasi ke kreator. Pelaku menjual Telegram Premium atau Stars dengan harga sangat murah melalui WhatsApp/Telegram pihak ketiga. Setelah transfer, pembeli tidak pernah menerima Stars, atau menerima Stars curian yang kemudian di-revoke oleh Telegram. Modus lain: phishing yang mengaku dari 'Telegram Official' untuk mencuri akun.",
+    micro_lesson: "Pembelian Telegram Premium dan Stars HANYA melalui pengaturan di aplikasi Telegram resmi. Penjual pihak ketiga yang menawarkan harga murah hampir pasti menggunakan metode ilegal (kartu kredit curian, dsb) yang bisa berakibat akunmu diblokir.",
+    weight_category: "high"
+  },
+  {
+    id: "fraud_87",
+    category: "Penipuan Deepfake Video Call Real-Time",
+    threat_level: "Critical",
+    action: "Jika video call dengan kenalan online terasa 'aneh' (gerakan bibir tidak sinkron, wajah terlalu mulus, cahaya tidak natural), kemungkinan besar itu deepfake. Akhiri panggilan dan verifikasi melalui cara lain.",
+    keywords: ["video call", "vc", "deepfake", "wajah palsu", "ai video", "face swap", "tidak mau ketemu", "gerakan aneh", "bibir tidak sinkron", "wajah terlalu mulus", "video call aneh"],
+    patterns: [
+      "video call gerakannya aneh",
+      "bibir tidak sinkron dengan suara",
+      "wajah di video call terlalu mulus",
+      "video call seperti bukan orang asli",
+      "cahaya di wajah tidak natural",
+      "dia tidak mau video call lama",
+      "video call cuma sebentar langsung mati",
+      "vc tapi wajahnya seperti efek filter"
+    ],
+    analysis_result: "Ini adalah modus **Deepfake Video Call Real-Time** yang sangat canggih dan berbahaya di 2025-2026. Berbeda dengan deepfake statis (foto/video), teknologi kini memungkinkan manipulasi wajah secara real-time saat video call. Pelaku menggunakan software face-swap (seperti DeepFaceLive) untuk menampilkan wajah orang lain di kamera mereka saat video call. Tanda-tandanya: gerakan bibir tidak sinkron dengan suara, wajah terlalu mulus/ideal, cahaya di wajah berbeda dengan latar belakang, dan pelaku selalu membatasi durasi video call.",
+    micro_lesson: "Deepfake video call sudah sangat canggih di 2026—bisa meniru wajah siapapun secara real-time. Verifikasi kenalan online dengan: (1) meminta gerakan spesifik (tunjukkan tangan, putar kepala), (2) perhatikan sinkronisasi bibir-suara, (3) cek apakah cahaya di wajah konsisten dengan lingkungan, (4) jika ragu, minta video call sambil pegang kertas bertuliskan nama/kode tertentu.",
+    weight_category: "critical"
   }
 ];
 
@@ -2470,15 +2555,15 @@ export const SCAM_DB: ScamDatabaseItem[] = [
       "tolong bayar biaya dokumen",
       "aku ingin pulang ke indonesia",
       "aku single parent istri meninggal",
-      "aku insinyu minyak di rig",
+      "aku insinyur minyak di rig",
       "aku di misi perdamaian pbb",
       "kirim uang untuk tiket pesawat",
       "aku punya warisan butuh bantuan cairkan",
       "aku jatuh cinta padamu dari foto mu",
       "aku ingin ke indonesia menemuimu"
     ],
-    "analysis_result": "Ini adalah modus **Romance Scam dengan Profesi Terpercaya (Tentara/Dokter Asing)**. Pelaku mengaku sebagai tentara AS, dokter di zona konflik, atau insinyu di rig minyak—profesi yang terkesan serius dan terpercaya. Mereka membangun hubungan romantis selama berminggu-minggu, lalu mulai meminta uang untuk berbagai alasan: izin cuti, biaya dokumen, tiket pesawat, atau warisan yang perlu dicairkan. Identitas dan foto yang digunakan selalu dicuri dari orang lain.",
-    "micro_lesson": "Tentara, dokter, atau insinyu asing TIDAK AKAN mencari pasangan di Facebook/Instagram dan minta uang. Semua alasan untuk minta uang (cuti, dokumen, tiket) adalah BOHONG. Lakukan reverse image search di Google untuk cek apakah foto profilnya dicuri."
+    "analysis_result": "Ini adalah modus **Romance Scam dengan Profesi Terpercaya (Tentara/Dokter Asing)**. Pelaku mengaku sebagai tentara AS, dokter di zona konflik, atau insinyur di rig minyak—profesi yang terkesan serius dan terpercaya. Mereka membangun hubungan romantis selama berminggu-minggu, lalu mulai meminta uang untuk berbagai alasan: izin cuti, biaya dokumen, tiket pesawat, atau warisan yang perlu dicairkan. Identitas dan foto yang digunakan selalu dicuri dari orang lain.",
+    "micro_lesson": "Tentara, dokter, atau insinyur asing TIDAK AKAN mencari pasangan di Facebook/Instagram dan minta uang. Semua alasan untuk minta uang (cuti, dokumen, tiket) adalah BOHONG. Lakukan reverse image search di Google untuk cek apakah foto profilnya dicuri."
   },
   {
     "id": "fraud_45",
@@ -2767,7 +2852,19 @@ const checkWithRegex = (text: string) => {
   return { flags, suspiciousKeywordsList, score, rawScore };
 };
 
-export async function analyzeTextLocal(input: string, isUrl: boolean): Promise<AnalysisResult> {
+export function analyzeTextLocal(input: string, isUrl: boolean): AnalysisResult {
+  if (!input || !input.trim()) {
+    return {
+      verdict: 'AMAN',
+      dangerScore: 1,
+      redFlags: [],
+      suspiciousKeywords: [],
+      simpleExplanation: "Pesan kosong tidak bisa dianalisis. Silakan masukkan teks atau URL untuk diperiksa.",
+      actionItem: "Ketik atau tempel pesan yang ingin kamu periksa ke kolom analisis.",
+      microLesson: "Selalu waspada terhadap pesan dari nomor atau akun yang tidak dikenal."
+    };
+  }
+
   // 1. Preprocess text
   const cleaned = cleanText(input);
 
@@ -2895,16 +2992,24 @@ export async function analyzeTextLocal(input: string, isUrl: boolean): Promise<A
   };
 }
 
-export async function processQuizAnswerLocal(input: string, isSafe: boolean, _exampleNumber: number): Promise<string> {
+export function processQuizAnswerLocal(input: string, isSafe: boolean, _exampleNumber: number): string {
+  if (!input || !input.trim()) {
+    return "Pesan kosong tidak bisa dianalisis.";
+  }
+
   const cleaned = cleanText(input);
   const { score } = checkWithRegex(cleaned);
-  
+
   const dynamicThreshold = cleaned.length < 30 ? 0.2 : 0.4;
-  const fuse = new Fuse(SCAM_DB, { keys: ['patterns', 'keywords'], includeScore: true, threshold: dynamicThreshold });
+  const fuse = new Fuse(SCAM_DB, { keys: ['patterns', 'keywords'], includeScore: true, threshold: dynamicThreshold, minMatchCharLength: 4, distance: 100 });
   const result = fuse.search(cleaned);
 
+  // Cek top-3 matches (konsisten dengan analyzeTextLocal)
+  const topMatches = result.filter(r => r.score !== undefined && (1 - r.score) > 0.35).slice(0, 3);
+  const hasStrongMatch = topMatches.some(r => (1 - r.score!) > 0.4);
+
   let isActuallySafe = true;
-  if (score >= 3 || (result[0] && result[0].score !== undefined && (1 - result[0].score) > 0.4)) {
+  if (score >= 3 || hasStrongMatch) {
     isActuallySafe = false;
   }
 
