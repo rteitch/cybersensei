@@ -1,4 +1,4 @@
-import { ScamDatabaseItem } from './types';
+import { ScamDatabaseItem } from './types.js';
 
 export const SCAM_DB: ScamDatabaseItem[] = [
   {

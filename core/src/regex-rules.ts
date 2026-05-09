@@ -2,7 +2,7 @@
 // REGEX RULES — Modular regex-based detection rules
 // ============================================================
 
-import { RegexRule } from './types';
+import { RegexRule } from './types.js';
 
 // ============================================================
 // WEIGHTED SCORING SYSTEM

@@ -2,8 +2,8 @@
 // URL / DOMAIN ANALYZER — Analisis URL, domain, TLD, shortener, brand spoofing
 // ============================================================
 
-import { URLAnalysis, HomographResult } from './types';
-import { UNICODE_HOMOGLYPH_MAP } from './preprocessing';
+import { URLAnalysis, HomographResult } from './types.js';
+import { UNICODE_HOMOGLYPH_MAP } from './preprocessing.js';
 
 export const HIGH_RISK_TLDS = new Set([
   'xyz', 'top', 'buzz', 'club', 'click', 'icu',
