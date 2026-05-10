@@ -306,8 +306,8 @@ export const REGEX_RULES: RegexRule[] = [
   },
   {
     id: 'gambling',
-    label: 'Ajakan bermain judi online — ilegal di Indonesia dan dirancang untuk menguras uangmu.',
-    regex: /(main slot[^\n]{0,10}(pasti menang|gacor|maxwin)|deposit[^\n]{0,10}(untuk|bisa)[^\n]{0,10}(main|slot|maxwin)|situs judi|slot gacor|rtp[^\n]{0,10}(tinggi|hari ini)|agen judi|togel online)/gi,
+    label: 'Ajakan bermain judi online (Slot/WD/JP) — ilegal di Indonesia dan dirancang untuk menguras uangmu.',
+    regex: /(main slot[^\n]{0,10}(pasti menang|gacor|maxwin)|deposit[^\n]{0,10}(untuk|bisa)[^\n]{0,10}(main|slot|maxwin)|situs judi|slot gacor|rtp[^\n]{0,10}(tinggi|hari ini)|agen judi|togel online|modal[^\n]{0,15}(ribu|rbu|k)[^\n]{0,15}(jp|wd|jackpot|maxwin|juta|cair)|\b(jp|wd|withdraw)\b[^\n]{0,15}(\d+|puluhan)[^\n]{0,10}(juta|jt|k|ribu))/gi,
     score: 6,
     weight_category: 'moderate'
   },

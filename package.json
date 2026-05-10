@@ -12,6 +12,12 @@
     "build:bot": "npm run build --workspace=@cybersensei/bot",
     "build": "npm run build:core && npm run build:web && npm run build:bot",
     "dev:web": "npm run dev --workspace=@cybersensei/web",
+    "dev:bot": "npm run dev --workspace=@cybersensei/bot",
+    "dev": "concurrently \"npm run dev:web\" \"PORT=8080 npm run dev:bot\"",
+    "start": "npm run build && node apps/bot/dist/server.js",
     "start:bot": "npm start --workspace=@cybersensei/bot"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
   }
 }

@@ -108,6 +108,12 @@ npm run start:bot
 
 Proyek ini telah dikonfigurasi menggunakan **Multi-Stage Dockerfile**. Proses deploy akan mem-build *Core*, mem-build *Web*, mem-build *Bot*, dan akhirnya menjalankan Server Express (Bot) yang sekaligus melayani file *Frontend Web* di port yang sama!
 
+Lakukan login ke akun GCP Anda:
+   ```bash
+   gcloud auth login
+   gcloud config set project <PROJECT_ID>
+   ```
+
 Sesuai permintaan, gunakan perintah ini di terminal yang sudah terautentikasi gcloud (ganti `<TOKEN_ANDA>` dengan token dari BotFather dan `<URL_CLOUDRUN>` dengan URL asli dari Cloud Run Anda, misalnya `https://cybersensei-633534264127.asia-southeast2.run.app`):
 
 ```bash
