@@ -62,20 +62,20 @@ export const REGEX_RULES: RegexRule[] = [
     label: 'Stiker QRIS palsu ditempel di merchant — periksa nama merchant sebelum bayar.',
     regex: /(qris.*tempel|stiker.*qr|qr.*ditimpa|qr.*overlay|scan.*qris.*palsu|ganti.*qris)/gi,
     score: 6,
-    weight_category: 'high'
+    weight_category: 'critical'
   },
   {
     id: 'voice_cloning',
     label: 'Pola Voice Cloning Scam — suara bisa dipalsukan AI. Jangan transfer sebelum verifikasi ulang.',
     regex: /(suara[^\n]{0,15}mirip[^\n]{0,15}(keluarga|anak|istri|suami|teman)|voice[^\n]{0,10}cloning|suara asli tapi nomor beda|(mama|papa|anak|suami|istri|kakak|adik)[^\n]{0,15}ini aku[^\n]{0,30}(butuh|tolong|minta)[^\n]{0,15}(uang|transfer|kirim)|ini (anak|suami|istri|papa|mama)[^\n]{0,15}nomor[^\n]{0,10}(baru|beda|lain)|kecelakaan[^\n]{0,30}(transfer|kirim uang)[^\n]{0,30}(jangan|rahasia|cerita))/gi,
-    score: 7,
+    score: 8,
     weight_category: 'critical'
   },
   {
     id: 'deepfake_invest',
     label: 'Video promosi investasi dari tokoh publik — kemungkinan deepfake AI.',
     regex: /(video[^\n]{0,10}(presiden|prabowo|jokowi|artis|selebriti)[^\n]{0,15}(dukung|rekomendasikan|endors)|deepfake[^\n]{0,10}(investasi|trading|kripto))/gi,
-    score: 7,
+    score: 8,
     weight_category: 'critical'
   },
   {
@@ -85,20 +85,55 @@ export const REGEX_RULES: RegexRule[] = [
     score: 6,
     weight_category: 'critical'
   },
-  // === HIGH WEIGHT ===
   {
     id: 'apk_install',
-    label: 'Suruhan untuk menginstal file/aplikasi asing (.APK).',
+    label: 'Suruhan untuk menginstal file/aplikasi asing (.APK) — bisa menyadap OTP dan menguras M-Banking.',
     regex: /(\.apk|buka aplikasi|install aplikasi|download apk|file apk)/gi,
-    score: 6,
-    weight_category: 'high'
+    score: 7,
+    weight_category: 'critical'
   },
   {
+    id: 'fake_dukcapil_apk',
+    label: 'Pembaruan data KTP/KK via APK — Dukcapil tidak pernah mengirim APK. Modus ini bisa menguras M-Banking.',
+    regex: /(pembaruan data|update data|sinkronisasi)[^\n]{0,20}(kk|ktp|dukcapil|identitas)[^\n]{0,20}(apk|aplikasi|link)/gi,
+    score: 7,
+    weight_category: 'critical'
+  },
+  {
+    id: 'remote_access_scam',
+    label: 'Permintaan instalasi aplikasi remote access — sangat berbahaya, penipu bisa mengintip layar dan OTP Anda.',
+    regex: /(anydesk|teamviewer|bagikan layar|screen share|berbagi layar|remote access)/gi,
+    score: 7,
+    weight_category: 'critical'
+  },
+  {
+    id: 'gambling',
+    label: 'Ajakan bermain judi online (Slot/WD/JP) — ilegal di Indonesia dan dirancang untuk menguras uangmu.',
+    regex: /(main slot[^\n]{0,10}(pasti menang|gacor|maxwin)|deposit[^\n]{0,10}(untuk|bisa)[^\n]{0,10}(main|slot|maxwin)|situs judi|slot gacor|rtp[^\n]{0,10}(tinggi|hari ini)|agen judi|togel online|modal[^\n]{0,15}(ribu|rbu|k)[^\n]{0,15}(jp|wd|jackpot|maxwin|juta|cair)|\b(jp|wd|withdraw)\b[^\n]{0,15}(\d+|puluhan)[^\n]{0,10}(juta|jt|k|ribu))/gi,
+    score: 7,
+    weight_category: 'critical'
+  },
+  {
+    id: 'joki_pinjol',
+    label: 'Tawaran joki pinjol/galbay — sangat berisiko pencurian data pribadi.',
+    regex: /(joki pinjol|konsultan galbay|hapus utang pinjol|stop penagihan dc|hapus data pinjol)/gi,
+    score: 5,
+    weight_category: 'critical'
+  },
+  {
+    id: 'pig_butchering',
+    label: 'Modus "Salah Sambung" yang berujung pada penipuan investasi (Pig Butchering Scam) — kerugian terbesar secara global.',
+    regex: /(maaf salah sambung|ini nomor[^\n]{0,10}bukan|simpan nomor saya|kita bisa jadi teman|trading kripto bareng|bimbingan trading|profit konsisten|meta online)/gi,
+    score: 8,
+    weight_category: 'critical'
+  },
+  // === HIGH WEIGHT ===
+  {
     id: 'shortlink',
-    label: 'Menggunakan Tautan Singkat/Pendek. Situs penipu sering memakainya.',
+    label: 'Menggunakan Tautan Singkat/Pendek — situs penipu sering memakainya untuk sembunyikan URL phishing.',
     regex: /(s\.id|bit\.ly|tinyurl\.com|cutt\.ly|wa\.me|t\.me|rb\.gy|is\.gd|v\.ht|shorturl\.at|dwz\.id|lynk\.id)[^\s]*/gi,
-    score: 2,
-    weight_category: 'moderate'
+    score: 4,
+    weight_category: 'high'
   },
   {
     id: 'urgency_fear',
@@ -157,13 +192,6 @@ export const REGEX_RULES: RegexRule[] = [
     weight_category: 'high'
   },
   {
-    id: 'joki_pinjol',
-    label: 'Tawaran joki pinjol/galbay — sangat berisiko pencurian data pribadi.',
-    regex: /(joki pinjol|konsultan galbay|hapus utang pinjol|stop penagihan dc|hapus data pinjol)/gi,
-    score: 5,
-    weight_category: 'high'
-  },
-  {
     id: 'tax_phishing',
     label: 'Klaim tagihan/denda pajak — waspadai phishing DJP. Cek hanya di pajak.go.id.',
     regex: /(tunggakan pajak|denda pajak|peringatan pajak|coretax akun|kode billing pajak)/gi,
@@ -193,29 +221,15 @@ export const REGEX_RULES: RegexRule[] = [
   },
   {
     id: 'quishing',
-    label: 'Permintaan scan QR Code mencurigakan — waspadai modus Quishing.',
+    label: 'Permintaan scan QR Code mencurigakan — waspadai modus Quishing yang semakin marak.',
     regex: /(scan qr|pindai qr|kode qr|qr code|scan barcode)/gi,
-    score: 3,
-    weight_category: 'high'
-  },
-  {
-    id: 'fake_dukcapil_apk',
-    label: 'Pembaruan data KTP/KK via APK — Dukcapil tidak pernah mengirim APK.',
-    regex: /(pembaruan data|update data|sinkronisasi)[^\n]{0,20}(kk|ktp|dukcapil|identitas)[^\n]{0,20}(apk|aplikasi|link)/gi,
-    score: 6,
-    weight_category: 'high'
-  },
-  {
-    id: 'fake_lapor_scam',
-    label: 'Tautan pengaduan penipuan palsu — lapor hanya ke kanal resmi OJK/Polri.',
-    regex: /(lapor penipuan|pusat bantuan penipuan|satgas pasti|appk ojk|pengembalian dana penipuan)[^\n]{0,30}(link|klik|hubungi|whatsapp)/gi,
     score: 5,
     weight_category: 'high'
   },
   {
-    id: 'pig_butchering',
-    label: 'Modus "Salah Sambung" yang berujung pada penipuan investasi (Pig Butchering Scam).',
-    regex: /(maaf salah sambung|ini nomor[^\n]{0,10}bukan|simpan nomor saya|kita bisa jadi teman|trading kripto bareng|bimbingan trading|profit konsisten|meta online)/gi,
+    id: 'fake_lapor_scam',
+    label: 'Tautan pengaduan penipuan palsu — lapor hanya ke kanal resmi IASC/OJK/Polri.',
+    regex: /(lapor penipuan|pusat bantuan penipuan|satgas pasti|appk ojk|pengembalian dana penipuan|iasc|indonesia anti.?scam|lapor[^\n]{0,10}scam)[^\n]{0,30}(link|klik|hubungi|whatsapp|palsu|penipu)/gi,
     score: 6,
     weight_category: 'high'
   },
@@ -223,6 +237,13 @@ export const REGEX_RULES: RegexRule[] = [
     id: 'jual_beli_segitiga',
     label: 'Modus Penipuan Segitiga — Jangan transfer ke orang yang berbeda dari nama STNK/Pemilik asli.',
     regex: /(transfer ke rekening (istri|suami|saudara|kakak) saya|jangan bahas harga (dengan|sama) orang rumah|saya suruh orang ngecek barang|nanti orang saya yang ambil)/gi,
+    score: 6,
+    weight_category: 'high'
+  },
+  {
+    id: 'military_romance',
+    label: 'Identitas tentara/dokter/insinyur asing — modus Romance Scam dengan profesi terpercaya, dampak finansial besar.',
+    regex: /(aku (tentara|dokter|insinyur)[^\n]{0,15}(di|sedang)[^\n]{0,15}(bertugas|yaman|suriah|afghanistan|rig)|butuh uang[^\n]{0,15}(cuti|dokumen|tiket)|aku[^\n]{0,10}(single|duda|janda)[^\n]{0,10}(parent|anak))/gi,
     score: 6,
     weight_category: 'high'
   },
@@ -305,24 +326,10 @@ export const REGEX_RULES: RegexRule[] = [
     weight_category: 'moderate'
   },
   {
-    id: 'gambling',
-    label: 'Ajakan bermain judi online (Slot/WD/JP) — ilegal di Indonesia dan dirancang untuk menguras uangmu.',
-    regex: /(main slot[^\n]{0,10}(pasti menang|gacor|maxwin)|deposit[^\n]{0,10}(untuk|bisa)[^\n]{0,10}(main|slot|maxwin)|situs judi|slot gacor|rtp[^\n]{0,10}(tinggi|hari ini)|agen judi|togel online|modal[^\n]{0,15}(ribu|rbu|k)[^\n]{0,15}(jp|wd|jackpot|maxwin|juta|cair)|\b(jp|wd|withdraw)\b[^\n]{0,15}(\d+|puluhan)[^\n]{0,10}(juta|jt|k|ribu))/gi,
-    score: 6,
-    weight_category: 'moderate'
-  },
-  {
     id: 'survey_scam',
     label: 'Tawaran survey/review berbayar yang minta deposit — modus Task Scam lanjutan.',
     regex: /(isi survey[^\n]{0,10}(dapat|dibayar)|review[^\n]{0,10}(produk|aplikasi)[^\n]{0,10}(dapat|komisi)|deposit[^\n]{0,15}(untuk|akses)[^\n]{0,10}(survey|misi)|upgrade[^\n]{0,10}(member|akun)[^\n]{0,15}(survey|misi))/gi,
     score: 4,
-    weight_category: 'moderate'
-  },
-  {
-    id: 'military_romance',
-    label: 'Identitas tentara/dokter/insinyur asing — modus Romance Scam dengan profesi terpercaya.',
-    regex: /(aku (tentara|dokter|insinyur)[^\n]{0,15}(di|sedang)[^\n]{0,15}(bertugas|yaman|suriah|afghanistan|rig)|butuh uang[^\n]{0,15}(cuti|dokumen|tiket)|aku[^\n]{0,10}(single|duda|janda)[^\n]{0,10}(parent|anak))/gi,
-    score: 6,
     weight_category: 'moderate'
   },
   {
@@ -404,13 +411,6 @@ export const REGEX_RULES: RegexRule[] = [
   },
   // === NEW MODUS 2025-2026 ===
   {
-    id: 'remote_access_scam',
-    label: 'Permintaan instalasi aplikasi remote access — sangat berbahaya, penipu bisa mengintip layar dan OTP Anda.',
-    regex: /(anydesk|teamviewer|bagikan layar|screen share|berbagi layar|remote access)/gi,
-    score: 6,
-    weight_category: 'high'
-  },
-  {
     id: 'false_trust',
     label: 'Jaminan keamanan berlebihan — taktik psikologis untuk memanipulasi kepercayaan (reverse social proof).',
     regex: /(100% aman|dijamin resmi ojk|bukan penipuan|tanpa resiko|pasti cair|jaminan resmi)/gi,
@@ -461,6 +461,35 @@ export const REGEX_RULES: RegexRule[] = [
     score: 6,
     weight_category: 'high'
   },
+  // === EMERGING THREATS 2025-2026 ===
+  {
+    id: 'sim_swap_fraud',
+    label: 'Indikasi SIM Swap Fraud — penipu mengganti kartu SIM korban untuk membajak OTP dan akun.',
+    regex: /(kartu[^\n]{0,15}(tidak aktif|mati|hilang sinyal|no service)|sim[^\n]{0,10}(diganti|ditukar|diaktifkan ulang|swap)|nomor[^\n]{0,15}(tidak bisa|gagal)[^\n]{0,10}(telepon|sms|wa)|(tiba.?tiba|tanpa)[^\n]{0,15}(otp|kode verifikasi)[^\n]{0,15}masuk|provider[^\n]{0,15}(ganti|tukar)[^\n]{0,10}sim)/gi,
+    score: 7,
+    weight_category: 'high'
+  },
+  {
+    id: 'qris_crossborder',
+    label: 'Permintaan pembayaran QRIS lintas negara — QRIS hanya berlaku di Indonesia, modus penipuan emerging.',
+    regex: /(qris[^\n]{0,15}(luar negeri|asean|internasional|malaysia|singapura|thailand|跨境)|bayar[^\n]{0,10}(qris|qr)[^\n]{0,15}(dollar|usd|myr|sgd|asing|international)|scan[^\n]{0,10}qr[^\n]{0,15}(luar|asing|internasional))/gi,
+    score: 5,
+    weight_category: 'high'
+  },
+  {
+    id: 'fake_ojk_website',
+    label: 'Website OJK/IASC palsu — verifikasi hanya di ojk.go.id dan iasc.ojk.go.id resmi.',
+    regex: /(ojk[^\n]{0,15}(palsu|fake|tiruan|bukan resmi)|iasc[^\n]{0,15}(palsu|fake|tiruan)|situs[^\n]{0,10}(ojk|iasc)[^\n]{0,15}(tidak resmi|bukan asli|penipuan)|ojk[^\n]{0,10}(recovery|pengembalian)[^\n]{0,15}dana)/gi,
+    score: 6,
+    weight_category: 'high'
+  },
+  {
+    id: 'referral_pyramid',
+    label: 'Skema referral berlapis — ciri penipuan piramida/MLM ilegal yang membutuhkan korban baru terus-menerus.',
+    regex: /(ajak[^\n]{0,15}teman[^\n]{0,15}(daftar|pakai|referral|gabung)|referral[^\n]{0,15}(kamu|aku|link|kode)[^\n]{0,15}(daftar|join|pakai)|komisi[^\n]{0,15}(ajak|rekrut|referral|downline)|bonus[^\n]{0,15}member[^\n]{0,15}baru|rekrut[^\n]{0,15}(orang|teman|member)[^\n]{0,15}(dapat|komisi|bonus)|downline|passive income[^\n]{0,15}(ajak|rekrut))/gi,
+    score: 5,
+    weight_category: 'high'
+  },
 ];
 
 // ID rule yang dianggap sinyal KRITIS — langsung BERBAHAYA tanpa perlu DB match
@@ -475,6 +504,13 @@ export const CRITICAL_RULE_IDS = new Set([
   'deepfake_invest',
   'gov_impersonation',
   'qris_overlay',
+  'gambling',
+  'apk_install',
+  'fake_dukcapil_apk',
+  'remote_access_scam',
+  'joki_pinjol',
+  'pig_butchering',
+  'sim_swap_fraud',
 ]);
 
 // Pre-compile regexForPosition untuk performa
@@ -492,6 +528,7 @@ export const URL_IRRELEVANT_RULES = new Set([
   'virtual_kidnapping',
   'money_mule',
   'advance_fee_heritage',
+  'referral_pyramid',
 ]);
 
 // DANGEROUS COMBOS — Rule Interaction Scoring
@@ -514,6 +551,14 @@ export const DANGEROUS_COMBOS: { rules: string[]; bonus: number; label: string }
   { rules: ['pig_butchering', 'payment_pressure'], bonus: 4, label: 'Salah sambung + desakan bayar — pig butchering lanjutan' },
   { rules: ['job_abroad', 'payment_pressure'], bonus: 4, label: 'Tawaran kerja luar negeri + minta DP — penipuan TKI/PMI' },
   { rules: ['fake_dukcapil_apk', 'urgency_fear'], bonus: 5, label: 'Update data Dukcapil via APK + tekanan waktu — malware berkedok pemerintah' },
+  { rules: ['sim_swap_fraud', 'urgency_fear'], bonus: 5, label: 'Indikasi SIM Swap + tekanan waktu — pembajakan akun tingkat lanjut' },
+  { rules: ['sim_swap_fraud', 'otp_request'], bonus: 6, label: 'SIM Swap + permintaan OTP — modus pembajakan akun penuh' },
+  { rules: ['qris_crossborder', 'urgency_fear'], bonus: 4, label: 'QRIS lintas negara + tekanan waktu — penipuan emerging ASEAN' },
+  { rules: ['fake_ojk_website', 'recovery_scam'], bonus: 5, label: 'Website OJK palsu + tawaran pemulihan dana — double scam' },
+  { rules: ['shortlink', 'sim_swap_fraud'], bonus: 5, label: 'Link pendek + indikasi SIM Swap — phishing data operator' },
+  { rules: ['gambling', 'referral_pyramid'], bonus: 4, label: 'Judi online + skema referral — penipuan berlapis paling berbahaya' },
+  { rules: ['referral_pyramid', 'urgency_fear'], bonus: 3, label: 'Skema referral + tekanan waktu — rekrutmen piramida mendesak' },
+  { rules: ['unrealistic_invest', 'referral_pyramid'], bonus: 4, label: 'Investasi bodong + skema referral — Ponzi scheme klasik' },
 ];
 
 // NEGATION DETECTION

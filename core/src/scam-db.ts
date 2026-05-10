@@ -1434,7 +1434,7 @@ export const SCAM_DB: ScamDatabaseItem[] = [
     ],
     analysis_result: "Ini adalah modus **QRIS Sticker Overlay** yang marak di 2025-2026. Pelaku menempelkan QR code palsu di atas QRIS asli merchant (restoran, warung, parkir). Saat pelanggan scan, uang justru masuk ke rekening penipu, bukan ke merchant. Modus ini sangat sulit dideteksi karena QR palsu terlihat persis sama. Kerugian bisa mencapai jutaan per hari per lokasi.",
     micro_lesson: "Sebelum bayar QRIS: (1) periksa apakah ada stiker yang ditempel menimpa stiker lain, (2) setelah scan, pastikan nama merchant muncul (bukan nama orang pribadi), (3) jika ragu, bayar tunai atau minta merchant menunjukkan QR resmi dari aplikasi.",
-    weight_category: "high"
+    weight_category: "critical"
   },
   {
     id: "fraud_64",
