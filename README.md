@@ -1,7 +1,7 @@
 <div align="center">
   <img src="apps/web/public/logo_cybersensei_maskot.png" alt="CyberSensei Logo" width="150" height="150" />
   <h1>🛡️ CyberSensei</h1>
-  <p><strong>Deteksi Penipuan Digital &middot; Powered by AI</strong></p>
+  <p><strong>Deteksi Penipuan Digital Modern &middot; Production-Grade Security Engine</strong></p>
   <p>Dikembangkan untuk <b>#JuaraVibeCoding</b> 2026 oleh <b>Rizal TH</b></p>
 
   <br/>
@@ -18,7 +18,7 @@
   <br/>
   <img src="apps/web/public/screenshot_landing.png" alt="CyberSensei - Tampilan Utama" width="800" />
   <br/>
-  <em>Tampilan utama CyberSensei — tempel pesan mencurigakan, dapatkan analisis instan.</em>
+  <em>Tampilan utama CyberSensei — tempel pesan mencurigakan, dapatkan analisis tingkat tinggi secara instan.</em>
   <br/><br/>
 </div>
 
@@ -26,119 +26,149 @@
 
 ## 📌 Apa itu CyberSensei?
 
-**CyberSensei** adalah asisten keamanan siber yang mendeteksi modus penipuan digital modern (scam, phishing, vishing, sextortion, deepfake, pig butchering, dll.) dalam bahasa Indonesia. Tersedia dalam dua bentuk antarmuka: **Web Dashboard** interaktif dan **Chatbot Agent** (Telegram/WhatsApp) untuk respon instan di genggaman Anda.
+**CyberSensei** adalah asisten keamanan siber cerdas (*Threat Analyzer Engine*) yang mendeteksi berbagai ancaman penipuan digital terkini (Phishing, Scam, Pig Butchering, Remote Access Scams, Bidi Obfuscation, dll.) dengan akurasi tinggi. Dibangun menggunakan arsitektur keamanan *production-grade*, aplikasi ini memberikan analisis komprehensif dalam bahasa Indonesia.
 
-Dibangun dengan arsitektur **Monorepo**, CyberSensei membagikan mesin analisis ancaman cerdasnya (`@cybersensei/core`) langsung ke Front-end React (`@cybersensei/web`) dan Back-end Bot Express (`@cybersensei/bot`), lalu di-deploy sebagai **Satu Service Tunggal** di Google Cloud Run.
+Aplikasi ini hadir dengan **dua antarmuka** utama:
+1. **Web Dashboard** interaktif untuk menganalisis pesan dengan laporan visual.
+2. **Chatbot Agent** (Telegram/WhatsApp) untuk perlindungan keamanan *real-time* dan *on-the-go*.
+
+Dibangun menggunakan desain **Monorepo**, CyberSensei mengisolasi logika cerdas deteksi di `@cybersensei/core` yang disalurkan dengan efisien ke antarmuka React (`@cybersensei/web`) dan Node.js Express Bot (`@cybersensei/bot`), dikemas utuh menjadi **Satu Service Efisien** di Google Cloud Run.
+
+### 🎯 Latar Belakang & Alasan Dibuat
+
+Proyek ini diinisiasi khusus untuk mengikuti kompetisi **#JuaraVibeCoding 2026** dengan tujuan luhur: menciptakan ruang digital Indonesia yang lebih aman. Mengingat modus penipuan (*scam*, *phishing*, *social engineering*) yang semakin canggih dan marak terjadi di masyarakat awam, CyberSensei hadir sebagai solusi edukasi dan perlindungan proaktif yang sangat mudah diakses (cukup via *chat* atau *web*) untuk menganalisis bahaya secara *real-time*.
+
+---
+
+## 🛠️ Tech Stack & Teknologi
+
+| Layer | Teknologi | Peran / Versi |
+|---|---|---|
+| **Frontend** | React + TypeScript | 19 / Antarmuka Interaktif |
+| **Build Tool** | Vite | 6 / Build System Super Cepat |
+| **Styling** | Tailwind CSS | 4 / Styling Modern |
+| **AI Search** | Fuse.js | 7 / Algoritma Fuzzy-search |
+| **Animation** | Motion (Framer Motion) | 12 / Animasi UI/UX |
+| **Icons** | Lucide React | 0.546 / Ikon Vektor UI |
+| **Backend Bot** | Node.js + Express | 20+ / Server API & Webhook |
+| **Bot Framework** | Telegraf | 4 / Pengendali Telegram Bot |
+| **Deployment** | Docker + Google Cloud Run | — / Serverless Monorepo Container |
 
 ---
 
 ## ✨ Fitur Utama & Interaksi Chatbot
 
-Selain web dashboard interaktif, CyberSensei kini dilengkapi **Chatbot Agent**.
+Selain web dashboard interaktif yang responsif, CyberSensei dilengkapi dengan **Chatbot Agent** untuk menganalisis teks secara langsung melalui aplikasi *chatting* Anda.
 
-### Bagaimana Cara Pengguna Berinteraksi dengan Chatbot?
-Sangat mudah! Pengguna berinteraksi dengan bot layaknya mengirim pesan ke teman biasa:
+<div align="center">
+  <br/>
+  <img src="apps/web/public/chatbot1.jpeg" alt="CyberSensei Chatbot Interaction 1" width="400" />
+  <img src="apps/web/public/chatbot2.png" alt="CyberSensei Chatbot Interaction 2" width="400" />
+  <br/>
+  <em>Interaksi langsung pengguna dengan CyberSensei Chatbot untuk mendeteksi penipuan.</em>
+  <br/><br/>
+</div>
 
-1. **Memulai (Start)**
-   - Pengguna: `/start`
-   - Bot: Menyapa dan memperkenalkan diri sebagai agen CyberSensei, serta menginstruksikan cara penggunaan.
-2. **Menganalisis Pesan atau Link (Langsung Forward/Ketik)**
-   - Pengguna *meneruskan (forward)* pesan penipuan dari chat orang lain, ATAU mengetik/menempel (paste) langsung teks/link ke dalam chat bot.
-   - Contoh pengguna: *"Selamat Anda memenangkan Rp 100 Juta dari Shopee! Klik link ini: http://shopee-hadiah.com"*
-3. **Respon Instan (Error Handler Terjamin)**
-   - Bot: Akan langsung merespon "🔍 Sedang menganalisis pesan Anda..." agar pengguna tahu pesannya diterima.
-   - Jika berhasil: Bot akan mengedit pesannya menjadi laporan lengkap yang berisi tingkat bahaya, penjelasan, dan red flags.
-   - Jika terjadi *error/crash* (Error Handler): Bot akan merespon secara elegan (graceful failure) "❌ Maaf, terjadi kesalahan saat menganalisis pesan. Silakan coba lagi nanti."
-4. **Anti-Spam di Grup Chat**
-   - Jika bot dimasukkan ke dalam **Grup Telegram**, bot *tidak akan* menganalisis setiap pesan yang lewat (mencegah spam/bising). Bot **HANYA** akan merespon jika **di-mention langsung** (contoh: `@cybersensei_bot tolong cek ini`) atau jika pengguna me-*reply* pesan milik bot.
+### Mekanisme Penggunaan Chatbot:
+Sangat mudah dan praktis untuk digunakan oleh orang awam!
+1. **Memulai Sesi (Start)**
+   - Cukup kirim `/start`. Bot akan menyapa, memperkenalkan diri, dan siap memberikan analisis keamanan.
+2. **Forwarding & Copy-Paste Pesan**
+   - Pengguna cukup *meneruskan (forward)* pesan WhatsApp/Telegram yang mencurigakan, atau sekadar *copy-paste* link ke ruang obrolan bot.
+   - Contoh: *"Selamat Anda memenangkan undian Rp 10 Juta! Klik link ini: http://shopee-hadiah.com"*
+3. **Respon Analisis Instan**
+   - Bot merespon awal dengan "🔍 Sedang menganalisis pesan Anda..." sebagai *feedback*.
+   - Kemudian secara *real-time*, memodifikasi pesannya dengan **Laporan Analisis Mendalam**, memaparkan tingkat bahaya, deskripsi ancaman, indikator (red flags), hingga skor risiko URL.
+4. **Proteksi Anti-Spam (Group Chat Mode)**
+   - Bila dimasukkan ke dalam Grup Telegram, bot tidak akan menganalisis setiap pesan yang berisik. Bot **HANYA** akan berjalan jika dipanggil langsung (`@cybersensei_bot tolong cek ini`) atau apabila pengguna me-*reply* pesan milik bot, memastikan grup tetap nyaman dan tidak spamming.
 
 ---
 
-## 🏗️ Arsitektur Proyek (Monorepo) & Keputusan Desain
+## ⚙️ Core Engine & Keamanan (CyberSensei Engine)
+
+`@cybersensei/core` merupakan mesin *Threat Intelligence* tangguh yang memiliki kapabilitas keamanan tingkat produksi:
+
+- **Bidi & Zalgo Obfuscation Normalization:** Sangat tahan terhadap manipulasi *Leet-Speak* yang canggih, memangkas teknik penyamaran karakter dan teks Bidirectional secara otomatis sebelum dianalisis.
+- **Path-Based Brand Spoofing:** Secara akurat melacak taktik pemalsuan nama (spoofing) merek-merek ternama yang tidak hanya bersembunyi di domain, namun meluas di dalam *subdomain* hingga ke dalam URL Path yang samar.
+- **Multi-Tier TLD Risk Scoring:** Menerapkan sistem penskoran reputasi dinamis berjenjang terhadap ratusan Top-Level Domain (TLD). Bisa membedakan risiko tinggi dari `.top` / `.xyz` secara drastis dibanding ekstensi `.id` / `.com` terverifikasi.
+- **ReDoS (Regular Expression Denial of Service) Protection:** Semua *Regex rules* untuk deteksi eksploitasi telah diaudit keamanannya terhadap pola masukan tak berujung (Catastrophic Backtracking) dan input truncation > 10.000 karakter, menjamin server tidak crash oleh *malicious payload*.
+- **Modern Threat Intel Database:** *Scam database* secara terus menerus diperbarui, mampu mendeteksi tren penipuan 2025-2026 seperti: *SaaS Phishing*, *Pig Butchering*, hingga *Remote Access / False Trust Scams*.
+
+---
+
+## 🏗️ Arsitektur Proyek (Monorepo)
 
 ```text
 cybersensei/
 ├── apps/
-│   ├── bot/       # Backend Node.js/Express (Telegram/WA Bot & melayani Web Static Files)
-│   └── web/       # Frontend React (Vite & TailwindCSS)
-├── core/          # Engine Deteksi AI & Database Threat Intelligence (Dipakai Bot & Web)
-├── Dockerfile     # Multi-stage build menyatukan bot & web ke dalam 1 image
-└── package.json   # Monorepo Workspace Root
+│   ├── bot/       # Backend Node.js/Express (Telegram/WA Webhook, Static Proxying, API Limit)
+│   └── web/       # Frontend React 19 (Vite, TailwindCSS, Motion)
+├── core/          # Engine Analyzer (Fuzzy Logic, TLD Scoring, Obfuscation normalizer)
+├── Dockerfile     # Multi-stage build -> Menggabungkan seluruh services dalam 1 Image Server
+└── package.json   # Monorepo Workspace Root Manager
 ```
 
-**Evaluasi Arsitektur (Mengapa Tidak Ada Fitur Konfigurasi API LLM/BYOM):**
-Awalnya direncanakan fitur Bring Your Own Model (BYOM) dimana pengguna memasukkan API Key LLM eksternal. Namun, **dievaluasi bahwa ini tidak ideal untuk Google Cloud Run.** Cloud Run bersifat *stateless* dan *scale-to-zero*, sehingga menyimpan state konfigurasi lokal (In-Memory atau File JSON) akan hilang saat server restart. Oleh karena itu, fitur BYOM dibatalkan demi mempertahankan performa super cepat, hemat memori, dan kemudahan deployment murni tanpa perlu database eksternal. Seluruh analisis dijalankan murni, instan, dan aman oleh *engine local* (`@cybersensei/core`) yang mengombinasikan *Fuzzy Search* dan algoritma heuristik secara efisien.
+### Serverless Ready (Google Cloud Run)
+Keputusan meninggalkan kapabilitas BYOM (Bring Your Own Model) / eksternal API dilakukan demi mengoptimalkan aplikasi dalam environment *Serverless* / Cloud Run (Stateless). Mesin Core CyberSensei ini bekerja secara *Zero-Data-Retention*, bebas memori database eksternal, sehingga eksekusinya **Sangat Cepat**, **Privasi Terjamin**, dan **Bisa Scale-to-Zero**.
 
 ---
 
-## 💻 Panduan Menjalankan & Deployment
+## 💻 Panduan Instalasi & Pengembangan
 
-### 1. Menjalankan di Lokal (Development)
+### 1. Pengembangan Lokal
 
 Pastikan Node.js v20+ terinstall.
 ```bash
-# Install semua package monorepo
+# 1. Install semua package monorepo
 npm install
 
-# Build semua package
+# 2. Build semua modules
 npm run build
 
-# Menjalankan Web Frontend
-npm run dev:web  # Buka di http://localhost:3000
+# 3. Jalankan Web Dashboard secara mandiri (localhost:3000)
+npm run dev:web
 
-# Menjalankan Bot Backend
-# (Pastikan sudah buat file .env berisi TELEGRAM_BOT_TOKEN)
+# 4. Jalankan Bot Backend (Lokal)
+# Syarat: pastikan buat file .env berisi TELEGRAM_BOT_TOKEN
 npm run start:bot
 ```
 
-### 2. Panduan Set-up Chatbot
-**Untuk Telegram:**
+### 2. Panduan Set-up Chatbot (Telegram)
 1. Buka Telegram, cari **@BotFather**, ketik `/newbot`.
 2. Dapatkan token API.
-3. Masukkan ke file `.env` (Lokal) atau Environment Variables (Cloud Run):
+3. Masukkan ke file `.env` di proyek:
    `TELEGRAM_BOT_TOKEN=token_anda`
-4. **SANGAT PENTING (Untuk Cloud Run):** Karena Cloud Run bisa *scale-to-zero*, metode Long-Polling tidak efektif. Tambahkan Environment Variable `WEBHOOK_DOMAIN` berisi URL Cloud Run Anda (misal: `https://cybersensei-633534264127.asia-southeast2.run.app`). Server otomatis akan menggunakan arsitektur Webhook jika variable ini terdeteksi!
+4. **PENTING UNTUK CLOUD RUN:** Tambahkan *Environment Variable* `WEBHOOK_DOMAIN` dengan URL lengkap Cloud Run Anda (contoh: `https://cybersensei-633534264127.asia-southeast2.run.app`). Aplikasi akan beralih dari mode *Polling* biasa menjadi *Webhook Arch* otomatis agar tidak dihentikan paksa saat Cloud Run tertidur (Scale-to-zero).
 
-**Untuk WhatsApp (Template Disediakan):**
-1. Buat aplikasi tipe *WhatsApp* di Meta for Developers.
-2. Setup *Webhook* menuju URL Cloud Run Anda: `https://[URL-CLOUDRUN]/api/whatsapp/webhook`
-3. Masukkan token verifikasi yang Anda buat ke dalam env: `WHATSAPP_VERIFY_TOKEN=token_bebas_anda`
+### 3. Deploy ke Google Cloud Run (Sekali Jalan!)
 
-### 3. Deployment Sekali Jalan ke Google Cloud Run
-
-Proyek ini telah dikonfigurasi menggunakan **Multi-Stage Dockerfile**. Proses deploy akan mem-build *Core*, mem-build *Web*, mem-build *Bot*, dan akhirnya menjalankan Server Express (Bot) yang sekaligus melayani file *Frontend Web* di port yang sama!
-
-Lakukan login ke akun GCP Anda:
-   ```bash
-   gcloud auth login
-   gcloud config set project <PROJECT_ID>
-   ```
-
-Sesuai permintaan, gunakan perintah ini di terminal yang sudah terautentikasi gcloud (ganti `<TOKEN_ANDA>` dengan token dari BotFather dan `<URL_CLOUDRUN>` dengan URL asli dari Cloud Run Anda, misalnya `https://cybersensei-633534264127.asia-southeast2.run.app`):
+*Multi-Stage Dockerfile* di repository ini akan membungkus **Bot API + Web Static Asset + Analyzer Core** hanya dalam **1 Single Container**. Sangat efisien dan hemat biaya.
 
 ```bash
+# Login
+gcloud auth login
+gcloud config set project <PROJECT_ID>
+
+# Deploy (Ganti token dan URL anda)
 gcloud run deploy cybersensei \
   --source . \
   --region asia-southeast2 \
   --allow-unauthenticated \
-  --set-env-vars="TELEGRAM_BOT_TOKEN=<TOKEN_ANDA>,WEBHOOK_DOMAIN=<URL_CLOUDRUN>"
+  --set-env-vars="TELEGRAM_BOT_TOKEN=<TOKEN_ANDA>,WEBHOOK_DOMAIN=<URL_CLOUDRUN_ANDA>"
 ```
-*(Atau, Anda dapat melakukan deploy tanpa `--set-env-vars` terlebih dahulu, lalu memasukkan variabel environment secara manual di menu "Edit & Deploy New Revision" -> "Variables & Secrets" di Console Google Cloud).*
 
 ---
 
-## 🔒 Keamanan, Performa & Privasi
+## 🔒 Postur Keamanan Server & Privasi
 
-- ✅ **Error Handling Kuat** — Jika terjadi kesalahan tak terduga pada server, bot merespon dengan fallback pesan secara *graceful* (elegan) sehingga pengguna tidak dibiarkan menggantung, dan crash terisolasi tidak mematikan server.
-- ✅ **Rate Limiting & Anti-Spam** — Bot menerapkan *cooldown* memori (2 detik antar pesan per pengguna) dan membatasi API web sebanyak 100 *request* per menit. Ini mencegah *race condition*, eksploitasi spammer, dan menjaga performa bot tetap secepat kilat (beban server minimal). Memori cooldown dibersihkan berkala untuk mencegah *memory leak*.
-- ✅ **Input Truncation** — Otomatis memotong input teks panjang (>10.000 karakter) untuk mencegah serangan *Memory Exhaustion* dan ReDoS (Regular Expression Denial of Service).
-- ✅ **Proteksi Keamanan Web (Helmet)** — Frontend disajikan melalui bot backend yang menggunakan modul keamanan modern seperti *Helmet.js* untuk injeksi Content Security Policy (CSP) dan perlindungan Header HTTP.
-- ✅ **Satu Kontainer Efisien** — Hemat biaya cloud, UI Web dan API Bot disatukan di 1 kontainer Cloud Run. Cocok untuk skalabilitas Cloud Run yang otomatis mati-nyala menyesuaikan *traffic*.
-- ✅ **Data Privacy** — Aplikasi **TIDAK** menyimpan riwayat chat maupun nomor pengguna ke dalam *database* permanen. Semuanya dianalisis dan dibuang dari memori sesudahnya (Zero-Data-Retention).
+- ✅ **Helmet.js / CSP Enforced:** Web Dashboard disajikan melalui bot backend yang menggunakan pengamanan HTTP Header ketat (Content Security Policy).
+- ✅ **API Rate Limiting:** Cooldown 2 detik (anti-spam) per user via memory dan Rate Limiter 100 req/menit via Express untuk memastikan integritas server dari serangan *bot-net/DDoS*.
+- ✅ **Graceful Error Fallbacks:** Apabila parsing gagal atau mesin core melempar eksepsi, bot secara pintar merespon dengan pesan gagal (*graceful failure*), bukan aplikasi yang terhenti paksa.
+- ✅ **Privasi Mutlak:** Aplikasi **TIDAK** menyimpan log percakapan maupun kredensial pengguna ke *database*. Sepenuhnya aman (Zero-Data Retention).
 
 ---
 
 <div align="center">
-  <p><i>Dibuat dengan ❤️ untuk menciptakan ruang digital Indonesia yang lebih aman.</i></p>
+  <p><i>Dibuat dengan ❤️ untuk menciptakan ruang digital Indonesia yang lebih tangguh dan aman.</i></p>
   <p><strong>© 2026 CyberSensei — Rizal TH</strong></p>
 </div>
