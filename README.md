@@ -60,6 +60,8 @@ Proyek ini diinisiasi khusus untuk mengikuti kompetisi **#JuaraVibeCoding 2026**
 
 Selain web dashboard interaktif yang responsif, CyberSensei dilengkapi dengan **Chatbot Agent** untuk menganalisis teks secara langsung melalui aplikasi *chatting* Anda.
 
+🚀 **Coba Bot Telegram Sekarang:** [**@CyberSensei_bot**](http://t.me/CyberSensei_bot)
+
 <div align="center">
   <br/>
   <img src="apps/web/public/chatbot1.jpeg" alt="CyberSensei Chatbot Interaction 1" width="400" />
